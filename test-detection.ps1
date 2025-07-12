@@ -1,9 +1,5 @@
-# 测试 xw-rsync.ps1 的检测逻辑
-# 全面检测系统环境和工具可用性
 
 Write-Host "=== Git Detection Test ==="
-
-# 方法1：检查常见路径
 
 $GitPaths = @(
     "C:\Program Files\Git",
@@ -20,8 +16,6 @@ foreach ($Path in $GitPaths) {
         Write-Host "✗ Not found: $Path"
     }
 }
-
-# 方法2：检查 PATH 环境变量
 
 Write-Host ""
 Write-Host "=== PATH Environment Check ==="
@@ -45,8 +39,6 @@ catch {
     Write-Host "✗ Error checking PATH for git"
 }
 
-# 方法3：检查注册表
-
 Write-Host ""
 Write-Host "=== Registry Check ==="
 try {
@@ -67,19 +59,13 @@ try {
 catch {
     Write-Host "✗ Error checking registry for Git"
 }
-
-# 解压工具检测
 Write-Host ""
 Write-Host "=== Extraction Tools Check ==="
-
-# 检查 ZSTD
 if (Get-Command zstd -ErrorAction SilentlyContinue) {
     Write-Host "✓ ZSTD found in PATH"
 } else {
     Write-Host "✗ ZSTD not found in PATH"
 }
-
-# 检查 7-Zip
 $SevenZipPaths = @(
     "C:\Program Files\7-Zip\7z.exe",
     "C:\Program Files (x86)\7-Zip\7z.exe"
@@ -94,8 +80,6 @@ foreach ($Path in $SevenZipPaths) {
         Write-Host "✗ Not found: $Path"
     }
 }
-
-# 当前 rsync 状态检查
 Write-Host ""
 Write-Host "=== Current rsync Status ==="
 if ($GitFound) {
@@ -104,8 +88,6 @@ if ($GitFound) {
 
     if (Test-Path "$InstallDir\rsync.exe") {
         Write-Host "✓ rsync.exe found"
-
-        # 检查版本
         try {
             $RsyncVersion = & "$InstallDir\rsync.exe" --version 2>$null | Select-Object -First 1
             Write-Host "  Version: $RsyncVersion"
@@ -119,8 +101,6 @@ if ($GitFound) {
 } else {
     Write-Host "✗ Cannot check rsync status - Git not found"
 }
-
-# 依赖库检查
 Write-Host ""
 Write-Host "=== Required DLLs Status ==="
 if ($GitFound) {
@@ -149,8 +129,6 @@ if ($GitFound) {
 } else {
     Write-Host "✗ Cannot check DLLs - Git directory not found"
 }
-
-# 管理员权限检查
 Write-Host ""
 Write-Host "=== Administrator Privileges Check ==="
 $IsAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
@@ -160,8 +138,6 @@ if ($IsAdmin) {
     Write-Host "✗ Not running with administrator privileges"
     Write-Host "  Note: Administrator privileges required for installation"
 }
-
-# 总结
 Write-Host ""
 Write-Host "=== Detection Summary ==="
 Write-Host "Git for Windows: $(if ($GitFound) { '✓ Found' } else { '✗ Not Found' })"
