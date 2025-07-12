@@ -1,8 +1,10 @@
 # 测试 xw-rsync.ps1 的检测逻辑
 # 全面检测系统环境和工具可用性
+
 Write-Host "=== Git Detection Test ==="
 
 # 方法1：检查常见路径
+
 $GitPaths = @(
     "C:\Program Files\Git",
     "C:\Program Files (x86)\Git"
@@ -20,6 +22,7 @@ foreach ($Path in $GitPaths) {
 }
 
 # 方法2：检查 PATH 环境变量
+
 Write-Host ""
 Write-Host "=== PATH Environment Check ==="
 try {
@@ -43,6 +46,7 @@ catch {
 }
 
 # 方法3：检查注册表
+
 Write-Host ""
 Write-Host "=== Registry Check ==="
 try {

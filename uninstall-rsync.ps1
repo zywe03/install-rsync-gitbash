@@ -2,6 +2,7 @@
 # 功能：删除通过 xw-rsync.ps1 安装的所有 rsync 相关文件
 # 包括：rsync.exe、msys-2.0.dll、msys-xxhash-0.dll 等依赖库
 # 用途：方便开发者测试和用户完全卸载
+
 $ErrorActionPreference = "Stop"
 
 Write-Host "=== rsync Uninstaller ==="
@@ -9,7 +10,8 @@ Write-Host "This script will remove rsync and all dependencies installed by xw-r
 Write-Host ""
 
 # 检测可能的安装目录（与安装脚本保持一致）
-# 优先检查 Git 目录（推荐安装位置），然后检查用户目录（旧版本）
+# 优先检查 Git 目录（推荐安装位置），然后检查用户目录
+
 $GitPaths = @(
     "C:\Program Files\Git\usr\bin",
     "C:\Program Files (x86)\Git\usr\bin",
