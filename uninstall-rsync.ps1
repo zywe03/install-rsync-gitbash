@@ -5,6 +5,7 @@ Write-Host "=== rsync Uninstaller ==="
 Write-Host "This script will remove rsync and all dependencies installed by xw-rsync.ps1"
 Write-Host ""
 
+
 $GitPaths = @(
     "C:\Program Files\Git\usr\bin",
     "C:\Program Files (x86)\Git\usr\bin",
@@ -32,6 +33,8 @@ if ($FoundInstallations.Count -eq 0) {
     Write-Host "rsync may not be installed or may be in a custom location."
     exit 0
 }
+
+
 $GitInstallations = $FoundInstallations | Where-Object { $_.Type -eq "Git" }
 if ($GitInstallations.Count -gt 0) {
     $IsAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
@@ -42,6 +45,8 @@ if ($GitInstallations.Count -gt 0) {
         Write-Host ""
     }
 }
+
+
 Write-Host "Found rsync installations:"
 foreach ($Installation in $FoundInstallations) {
     $Dir = $Installation.Path
@@ -58,6 +63,8 @@ foreach ($Installation in $FoundInstallations) {
             Write-Host "    Version: Unable to determine"
         }
     }
+    
+
     $RelatedFiles = Get-ChildItem -Path $Dir -Filter "*rsync*" -ErrorAction SilentlyContinue
     $DllFiles = Get-ChildItem -Path $Dir -Filter "*.dll" -ErrorAction SilentlyContinue | Where-Object {
         $_.Name -match "(msys-iconv-2|msys-charset-1|msys-intl-8|msys-xxhash-0|msys-lz4-1|msys-zstd-1|msys-crypto-3)\.dll$"
@@ -82,6 +89,8 @@ if ($Confirm -notmatch "^[Yy]") {
     Write-Host "Uninstallation cancelled."
     exit 0
 }
+
+
 Write-Host ""
 Write-Host "Uninstalling rsync..."
 $TotalRemoved = 0
@@ -91,9 +100,14 @@ foreach ($Installation in $FoundInstallations) {
     $Dir = $Installation.Path
     $Type = $Installation.Type
     Write-Host "Processing directory: $Dir [$Type installation]"
+
+
     $FilesToRemove = @()
+
+
     $RsyncExe = Get-ChildItem -Path $Dir -Filter "rsync.exe" -ErrorAction SilentlyContinue
     if ($RsyncExe) {
+
         $ParentDir = Split-Path $Dir -Parent
         $BackupDirs = Get-ChildItem -Path $ParentDir -Filter "backup_*" -Directory -ErrorAction SilentlyContinue
         if ($BackupDirs.Count -gt 0 -or $Type -eq "User") {
@@ -107,12 +121,16 @@ foreach ($Installation in $FoundInstallations) {
             }
         }
     }
+
+
     $Today = (Get-Date).Date
     $DllFiles = Get-ChildItem -Path $Dir -Filter "*.dll" -ErrorAction SilentlyContinue | Where-Object {
         $_.Name -match "(msys-iconv-2|msys-charset-1|msys-intl-8|msys-xxhash-0|msys-lz4-1|msys-zstd-1|msys-crypto-3)\.dll$" -and `
         $_.LastWriteTime.Date -eq $Today
     }
     $FilesToRemove += $DllFiles
+    
+
     $BackupDirs = Get-ChildItem -Path $Dir -Filter "backup_*" -Directory -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending
     if ($BackupDirs.Count -gt 0) {
         $LatestBackup = $BackupDirs[0]
@@ -131,6 +149,8 @@ foreach ($Installation in $FoundInstallations) {
             }
         }
     }
+
+
     foreach ($File in $FilesToRemove) {
         try {
             Remove-Item -Path $File.FullName -Force
@@ -142,6 +162,8 @@ foreach ($Installation in $FoundInstallations) {
             $FailedRemovals += $File.FullName
         }
     }
+    
+
     $RemainingFiles = Get-ChildItem -Path $Dir -ErrorAction SilentlyContinue
     if ($RemainingFiles.Count -eq 0) {
         Write-Host "  Directory $Dir is now empty."
@@ -157,6 +179,8 @@ foreach ($Installation in $FoundInstallations) {
         }
     }
 }
+
+
 Write-Host ""
 Write-Host "Cleaning up temporary files..."
 $TempFiles = @(
@@ -188,6 +212,8 @@ foreach ($Pattern in $TempFiles) {
         }
     }
 }
+
+
 Write-Host ""
 Write-Host "=== Uninstallation Summary ==="
 Write-Host "Files removed: $TotalRemoved"
